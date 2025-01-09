@@ -8,6 +8,7 @@
 #include "RgbImage.h"
 
 #define PI 3.141592654
+#define ESC 27
 #define UNUSED(x) (void) x
 
 
@@ -79,55 +80,56 @@ void initRendering(void) {
 void handleKeypress(unsigned char key, int x, int y) {
     UNUSED(x); UNUSED(y);
 
+    std::cout << key << std::endl;
     switch (key) {
-    case 27: //Escape key
-        exit(0);
-    case 'w': //Increase view angle z axis
-        if (viewAngleZ < 180) viewAngleZ += 3;
-        glutPostRedisplay();
-        break;
-    case 'z': //Decrease view angle z axis
-        if (viewAngleZ > 0) viewAngleZ -= 3;
-        glutPostRedisplay();
-        break;
-    case 'a': //Decrease view angle x axis
-        if (viewAngleX > 0) viewAngleX -= 3;
-        glutPostRedisplay();
-        break;
-    case 's': //Increase view angle x axis
-        if (viewAngleX < 180) viewAngleX += 3;
-        glutPostRedisplay();
-        break;
-    case 't': //Use texture or not
-        textureOn = !textureOn;
-        glutPostRedisplay();
-        break;
-    case '1': //Increase arm angle
-        angleArm += 3;
-        if (angleArm >= 360) angleArm = 0;
-        glutPostRedisplay();
-        break;
-    case '2': //Decrease arm angle
-        angleArm -= 3;
-        if (angleArm <= 0) angleArm = 360;
-        glutPostRedisplay();
-        break;
-    case '3': //Increase forearm angle
-        if (angleForearm < 90) angleForearm += 3;
-        glutPostRedisplay();
-        break;
-    case '4': //Decrease forearm angle
-        if (angleForearm > -90) angleForearm -= 3;
-        glutPostRedisplay();
-        break;
-    case '5': //Increase clamp angle y axis
-        if (angleClampY < 60) angleClampY += 3;
-        glutPostRedisplay();
-        break;
-    case '6': //Decrease clamp angle y axis
-        if (angleClampY > 0) angleClampY -= 3;
-        glutPostRedisplay();
-        break;
+        case ESC: //Escape key
+            exit(0);
+        case 'w': //Increase view angle z axis
+            if (viewAngleZ < 180) viewAngleZ += 3;
+            glutPostRedisplay();
+            break;
+        case 'z': //Decrease view angle z axis
+            if (viewAngleZ > 0) viewAngleZ -= 3;
+            glutPostRedisplay();
+            break;
+        case 'a': //Decrease view angle x axis
+            if (viewAngleX > 0) viewAngleX -= 3;
+            glutPostRedisplay();
+            break;
+        case 's': //Increase view angle x axis
+            if (viewAngleX < 180) viewAngleX += 3;
+            glutPostRedisplay();
+            break;
+        case 't': //Use texture or not
+            textureOn = !textureOn;
+            glutPostRedisplay();
+            break;
+        case '1': //Increase arm angle
+            angleArm += 3;
+            if (angleArm >= 360) angleArm = 0;
+            glutPostRedisplay();
+            break;
+        case '2': //Decrease arm angle
+            angleArm -= 3;
+            if (angleArm <= 0) angleArm = 360;
+            glutPostRedisplay();
+            break;
+        case '3': //Increase forearm angle
+            if (angleForearm < 90) angleForearm += 3;
+            glutPostRedisplay();
+            break;
+        case '4': //Decrease forearm angle
+            if (angleForearm > -90) angleForearm -= 3;
+            glutPostRedisplay();
+            break;
+        case '5': //Increase clamp angle y axis
+            if (angleClampY < 60) angleClampY += 3;
+            glutPostRedisplay();
+            break;
+        case '6': //Decrease clamp angle y axis
+            if (angleClampY > 0) angleClampY -= 3;
+            glutPostRedisplay();
+            break;
     }
 }
 
@@ -189,92 +191,84 @@ void drawSphere(float diameter) {
 
 void drawScene(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     glEnable(GL_TEXTURE_2D);
-
     glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    eyeX = eyeDistance * cos(viewAngleZ*PI / 180) * cos(viewAngleX*PI / 180);
-    eyeY = eyeDistance * cos(viewAngleZ*PI / 180) * sin(viewAngleX*PI / 180);
-    eyeZ = eyeDistance * sin(viewAngleZ*PI / 180);
 
-    if (viewAngleZ<90) gluLookAt(eyeX, eyeY, eyeZ, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
-    else               gluLookAt(eyeX, eyeY, eyeZ, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0);
+    glLoadIdentity(); {
+        eyeX = eyeDistance * cos(viewAngleZ*PI / 180) * cos(viewAngleX*PI / 180);
+        eyeY = eyeDistance * cos(viewAngleZ*PI / 180) * sin(viewAngleX*PI / 180);
+        eyeZ = eyeDistance * sin(viewAngleZ*PI / 180);
 
-    // drawing color
-    glColor3f(1.0f, 1.0f, 1.0f);
+        gluLookAt(eyeX, eyeY, eyeZ, 0, 0, 0, 0, 0, viewAngleZ < 90 ? 1. :-1.);
 
-    // draws the base
-    drawCylinder(diameterBase, heightBase);
-    glTranslatef(0.0f, 0.0f, heightBase);
-    drawDisk(diameterCylinder, diameterBase);
+        // drawing color
+        glColor3f(1.0f, 1.0f, 1.0f);
 
-    // move to arm referential
-    glRotatef(angleArm, 0.0f, 0.0f, 1.0f);
+        // draws the base
+        drawCylinder(diameterBase, heightBase);
+        glTranslatef(0.0f, 0.0f, heightBase);
+        drawDisk(diameterCylinder, diameterBase);
 
-    //draws the arm
-    drawCylinder(diameterCylinder, sizeArm);
+        // move to arm referential
+        glRotatef(angleArm, 0.0f, 0.0f, 1.0f);
 
-    // move to forearm referential
-    glTranslatef(0.0f, 0.0f, sizeArm + diameterSphere / 5);
-    glRotatef(angleForearm, 0.0f, 1.0f, 0.0f);
+        //draws the arm
+        drawCylinder(diameterCylinder, sizeArm);
 
-    //draws the forearm
-    drawSphere(diameterSphere);
-    glTranslatef(0.0f, 0.0f, diameterSphere / 5);
-    drawCylinder(diameterCylinder, sizeForearm);
+        // move to forearm referential
+        glTranslatef(0.0f, 0.0f, sizeArm + diameterSphere / 5);
+        glRotatef(angleForearm, 0.0f, 1.0f, 0.0f);
 
-    //move to clamp referential
-    glTranslatef(0.0f, 0.0f, sizeForearm + diameterSphere / 5);
-    glRotatef(angleClampZ, 0.0f, 0.0f, 1.0f);
+        //draws the forearm
+        drawSphere(diameterSphere);
+        glTranslatef(0.0f, 0.0f, diameterSphere / 5);
+        drawCylinder(diameterCylinder, sizeForearm);
 
-    //draws the clamp sphere
-    drawSphere(diameterSphere);
-    glTranslatef(0.0f, 0.0f, diameterSphere / 2);
+        //move to clamp referential
+        glTranslatef(0.0f, 0.0f, sizeForearm + diameterSphere / 5);
+        glRotatef(angleClampZ, 0.0f, 0.0f, 1.0f);
 
-    glPushMatrix();
+        //draws the clamp sphere
+        drawSphere(diameterSphere);
+        glTranslatef(0.0f, 0.0f, diameterSphere / 2);
+    }
 
-
-    //draws top part of clamp
-    glRotatef(angleClampY + 60, 0.0f, 1.0f, 0.0f);
-
-    drawCylinder(diameterCylinder / 3, sizeClampPart);
-    glTranslatef(0.0f, 0.0f, sizeClampPart + diameterSphere / 15);
-    drawSphere(diameterSphere / 3);
-
-    glTranslatef(0.0f, 0.0f, diameterSphere / 15);
-    glRotatef(-60, 0.0f, 1.0f, 0.0f);
-
-    drawCylinder(diameterCylinder / 3, sizeClampPart);
-    glTranslatef(0.0f, 0.0f, sizeClampPart + diameterSphere / 15);
-    drawSphere(diameterSphere / 3);
-
-    glTranslatef(0.0f, 0.0f, diameterSphere / 15);
-    glRotatef(-60, 0.0f, 1.0f, 0.0f);
-    drawCone(diameterCylinder / 3, sizeClampPart);
-
+    glPushMatrix(); //draws top part of clamp
+        glRotatef(angleClampY + 60, 0.0f, 1.0f, 0.0f);
+    
+        drawCylinder(diameterCylinder / 3, sizeClampPart);
+        glTranslatef(0.0f, 0.0f, sizeClampPart + diameterSphere / 15);
+        drawSphere(diameterSphere / 3);
+    
+        glTranslatef(0.0f, 0.0f, diameterSphere / 15);
+        glRotatef(-60, 0.0f, 1.0f, 0.0f);
+    
+        drawCylinder(diameterCylinder / 3, sizeClampPart);
+        glTranslatef(0.0f, 0.0f, sizeClampPart + diameterSphere / 15);
+        drawSphere(diameterSphere / 3);
+    
+        glTranslatef(0.0f, 0.0f, diameterSphere / 15);
+        glRotatef(-60, 0.0f, 1.0f, 0.0f);
+        drawCone(diameterCylinder / 3, sizeClampPart);
     glPopMatrix();
-    glPushMatrix();
 
-
-    //draws bottom part of clamp
-    glRotatef(-angleClampY - 60, 0.0f, 1.0f, 0.0f);
-
-    drawCylinder(diameterCylinder / 3, sizeClampPart);
-    glTranslatef(0.0f, 0.0f, sizeClampPart + diameterSphere / 15);
-    drawSphere(diameterSphere / 3);
-
-    glTranslatef(0.0f, 0.0f, diameterSphere / 15);
-    glRotatef(60, 0.0f, 1.0f, 0.0f);
-
-    drawCylinder(diameterCylinder / 3, sizeClampPart);
-    glTranslatef(0.0f, 0.0f, sizeClampPart + diameterSphere / 15);
-    drawSphere(diameterSphere / 3);
-
-    glTranslatef(0.0f, 0.0f, diameterSphere / 15);
-    glRotatef(60, 0.0f, 1.0f, 0.0f);
-    drawCone(diameterCylinder / 3, sizeClampPart);
-
+    glPushMatrix(); //draws bottom part of clamp
+        glRotatef(-angleClampY - 60, 0.0f, 1.0f, 0.0f);
+    
+        drawCylinder(diameterCylinder / 3, sizeClampPart);
+        glTranslatef(0.0f, 0.0f, sizeClampPart + diameterSphere / 15);
+        drawSphere(diameterSphere / 3);
+    
+        glTranslatef(0.0f, 0.0f, diameterSphere / 15);
+        glRotatef(60, 0.0f, 1.0f, 0.0f);
+    
+        drawCylinder(diameterCylinder / 3, sizeClampPart);
+        glTranslatef(0.0f, 0.0f, sizeClampPart + diameterSphere / 15);
+        drawSphere(diameterSphere / 3);
+    
+        glTranslatef(0.0f, 0.0f, diameterSphere / 15);
+        glRotatef(60, 0.0f, 1.0f, 0.0f);
+        drawCone(diameterCylinder / 3, sizeClampPart);
     glPopMatrix();
 
 
@@ -288,11 +282,10 @@ int main(int argc, char** argv) {
     glutCreateWindow("Garra");
 
     initRendering();
+
     glutDisplayFunc(drawScene);
     glutKeyboardFunc(handleKeypress);
     glutReshapeFunc(handleResize);
 
     glutMainLoop();
-
-    return 0;
 }

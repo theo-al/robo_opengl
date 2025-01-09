@@ -1,7 +1,7 @@
-#include <stdlib.h>
-#include <GL/glut.h> // gl alterado pra GL
+#include <cstdlib>
 #include <iostream>
-#include "RgbImage.h"
+#include <GL/glut.h>
+#include <RgbImage.h>
 
 #define UNUSED(x) (void) x
 #define ESC 27
@@ -48,7 +48,7 @@ void GerenciaMouse(int button, int state, int x, int y) {
 void GerenciaSetas(int key, int x, int y) {
     UNUSED(x); UNUSED(y);
 
-    std::cout << key;
+    std::cout << key << std::endl;
     switch (key) {
         case GLUT_KEY_UP:    rot_x += 6; break;
         case GLUT_KEY_DOWN:  rot_x -= 6; break;
@@ -62,7 +62,7 @@ void GerenciaSetas(int key, int x, int y) {
 void GerenciaTeclado(unsigned char key, int x, int y) {
     UNUSED(x); UNUSED(y);
 
-    std::cout << key;
+    std::cout << key << std::endl;
     switch (key) {
         case ESC: exit(0); break;
         case 'f':
