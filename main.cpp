@@ -49,7 +49,6 @@ void handle_mouse(int button, int state, int x, int y) {
             if (angle <= 130) angle += 5;
         }
     }
-    //EspecificaParametrosVisualizacao();
     glutPostRedisplay();
 }
 
@@ -84,7 +83,7 @@ void handle_keyboard(unsigned char key, int x, int y) {
 
 // Função callback chamada quando o tamanho da janela é alterado 
 void handle_window_resize(GLsizei w, GLsizei h) {
-    h = h?:1; // Para previnir uma divisão por zero
+    h = h?:1; // Para prevenir uma divisão por zero
     glViewport(0, 0, w, h); // Especifica o tamanho da viewport
     aspect_ratio = (GLfloat)w / (GLfloat)h; // Calcula a correção de aspecto
 }
@@ -138,22 +137,6 @@ void init_lighting(void) {
     // Habilita blending para usar alpha
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-}
-
-// Função usada para especificar o volume de visualização
-void EspecificaParametrosVisualizacao(void) {
-    // Especifica sistema de coordenadas de projeção
-    glMatrixMode(GL_PROJECTION);
-    // Inicializa sistema de coordenadas de projeção
-    glLoadIdentity();
-    // Especifica a projeção perspectiva
-    gluPerspective(angle, aspect_ratio, 0.1, 500);
-    // Especifica sistema de coordenadas do modelo
-    glMatrixMode(GL_MODELVIEW);
-    // Inicializa sistema de coordenadas do modelo
-    glLoadIdentity();
-    // Especifica posição do observador e do alvo
-    gluLookAt(0, 0, 200, 0, 30, 0, 0, 1, 0);
 }
 
 // função para desenhar um cubo
@@ -244,7 +227,19 @@ void handle_redraw(void) {
     // Limpa a janela e o depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    EspecificaParametrosVisualizacao();
+    // Especifica sistema de coordenadas de projeção
+    glMatrixMode(GL_PROJECTION);
+    // Inicializa sistema de coordenadas de projeção
+    glLoadIdentity();
+    // Especifica a projeção perspectiva
+    gluPerspective(angle, aspect_ratio, 0.1, 500);
+
+    // Especifica sistema de coordenadas do modelo
+    glMatrixMode(GL_MODELVIEW);
+    // Inicializa sistema de coordenadas do modelo
+    glLoadIdentity();
+    // Especifica posição do observador e do alvo
+    gluLookAt(0, 0, 200, 0, 30, 0, 0, 1, 0);
 
     // Desenha esfera no fundo/background
     if (fundo) {
@@ -445,7 +440,7 @@ int main(int argc, char** argv) {
     glutInitDisplayMode(GLUT_DOUBLE |
                         GLUT_RGBA |
                         GLUT_DEPTH);
-    glutInitWindowSize(700, 350);
+    glutInitWindowSize(400, 400);
     glutCreateWindow("Cabeça de Robô");
 
     init_lighting();
