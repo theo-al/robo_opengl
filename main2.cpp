@@ -20,26 +20,26 @@ const char* metal_tex_path = "./assets/metalTexture1.bmp";
 bool apply_textures = true;
 
 // coisas da garra
-float diameterCylinder = 0.3;
-float diameterSphere = 0.4;
-float sizeArm = 4.5;
-float sizeForearm = 3.0;
-float sizeHand = 2.0;
-float sizeClampPart = 1.0;
-float diameterBase = 2.0;
-float heightBase = 0.5;
+float cylinder_diameter = 0.3;
+float sphere_diameter   = 0.4;
+float arm_size        = 4.5;
+float forearm_size    = 3.0;
+float hand_size       = 2.0;
+float clamp_part_size = 1.0;
+float base_diameter = 2.0;
+float base_height   = 0.5;
 
 // coisas de perspectiva(?)
 float eye_dist = 20.0;
-float viewAngleX = 0.0;
-float viewAngleZ = 15.0;
+float view_rot_x = 0.0;
+float view_rot_z = 15.0;
 
 // coisas da garra
-float angleArm = 90.0;
-float angleForearm = 90.0;
-float angleHand = 0.0;
-float angleClampZ = 0.0;
-float angleClampY = 0.0;
+float arm_angle     = 90.0;
+float forearm_angle = 90.0;
+float hand_angle    = 0.0;
+float clamp_z_angle = 0.0;
+float clamp_y_angle = 0.0;
 
 
 void init_rendering(void) {
@@ -55,17 +55,13 @@ void handle_special_keys(int key, int x, int y) {
     std::cout << key << std::endl;
     switch (key) {
         case GLUT_KEY_UP:
-            if (viewAngleZ > 0) viewAngleZ -= 3;
+            if (view_rot_z > 0) view_rot_z -= 3;
 	    break;
         case GLUT_KEY_DOWN:
-            if (viewAngleZ < 180) viewAngleZ += 3;
+            if (view_rot_z < 180) view_rot_z += 3;
 	    break;
-        case GLUT_KEY_LEFT:
-            viewAngleX += 3;
-            break;
-        case GLUT_KEY_RIGHT:
-            viewAngleX -= 3;
-            break;
+        case GLUT_KEY_LEFT:  view_rot_x += 3; break;
+        case GLUT_KEY_RIGHT: view_rot_x -= 3; break;
     }
     glutPostRedisplay();
 }
@@ -75,38 +71,33 @@ void handle_keyboard(unsigned char key, int x, int y) {
 
     std::cout << key << std::endl;
     switch (key) {
-        case ESC: exit(0);
-        case 't': //Use texture or not
-            apply_textures ^= 1;
-            glutPostRedisplay();
-            break;
-        case '1': //Increase arm angle
-            angleArm += 3;
-            if (angleArm >= 360) angleArm = 0;
-            glutPostRedisplay();
-            break;
-        case '2': //Decrease arm angle
-            angleArm -= 3;
-            if (angleArm <= 0) angleArm = 360;
-            glutPostRedisplay();
-            break;
-        case '3': //Increase forearm angle
-            if (angleForearm < 90) angleForearm += 3;
-            glutPostRedisplay();
-            break;
-        case '4': //Decrease forearm angle
-            if (angleForearm > -90) angleForearm -= 3;
-            glutPostRedisplay();
-            break;
-        case '5': //Increase clamp angle y axis
-            if (angleClampY < 60) angleClampY += 3;
-            glutPostRedisplay();
-            break;
-        case '6': //Decrease clamp angle y axis
-            if (angleClampY > 0) angleClampY -= 3;
-            glutPostRedisplay();
-            break;
+      case ESC: exit(0); //Exit
+
+      case 't': //Use texture or not
+          apply_textures ^= 1;
+          break;
+      case '1': //Increase arm angle
+          arm_angle += 3;
+          if (arm_angle >= 360) arm_angle = 0;
+          break;
+      case '2': //Decrease arm angle
+          arm_angle -= 3;
+          if (arm_angle <= 0) arm_angle = 360;
+          break;
+      case '3': //Increase forearm angle
+          if (forearm_angle < 90) forearm_angle += 3;
+          break;
+      case '4': //Decrease forearm angle
+          if (forearm_angle > -90) forearm_angle -= 3;
+          break;
+      case '5': //Increase clamp angle y axis
+          if (clamp_y_angle < 60) clamp_y_angle += 3;
+          break;
+      case '6': //Decrease clamp angle y axis
+          if (clamp_y_angle > 0) clamp_y_angle -= 3;
+          break;
     }
+    glutPostRedisplay();
 }
 
 void handle_window_resize(GLsizei w, GLsizei h) {
@@ -123,84 +114,84 @@ void handle_redraw(void) {
     glEnable(GL_TEXTURE_2D);
     glMatrixMode(GL_MODELVIEW);
 
-    GLfloat eyeX, eyeY, eyeZ;
-    eyeX = eye_dist * cos(viewAngleZ*PI / 180) * cos(viewAngleX*PI / 180);
-    eyeY = eye_dist * cos(viewAngleZ*PI / 180) * sin(viewAngleX*PI / 180);
-    eyeZ = eye_dist * sin(viewAngleZ*PI / 180);
+    GLfloat eye_x, eye_y, eye_z;
+    eye_x = eye_dist * cos(view_rot_z*PI / 180) * cos(view_rot_x*PI / 180);
+    eye_y = eye_dist * cos(view_rot_z*PI / 180) * sin(view_rot_x*PI / 180);
+    eye_z = eye_dist * sin(view_rot_z*PI / 180);
     
     GLuint texture = apply_textures ? metal_tex_id : INVALID_TEXTURE;
 
     glLoadIdentity(); {
-        gluLookAt(eyeX, eyeY, eyeZ, 0, 0, 0, 0, 0, viewAngleZ < 90 ? 1. :-1.);
+        gluLookAt(eye_x, eye_y, eye_z, 0, 0, 0, 0, 0, view_rot_z < 90 ? 1. :-1.);
 
         //drawing color
         glColor3f(1.0f, 1.0f, 1.0f);
 
         //draws the base
-        drawCylinder(texture, diameterBase, heightBase);
-        glTranslatef(0.0f, 0.0f, heightBase);
-        drawDisk(texture, diameterCylinder, diameterBase);
+        draw_cylinder(texture, base_diameter, base_height);
+        glTranslatef(0.0f, 0.0f, base_height);
+        draw_disk(texture, cylinder_diameter, base_diameter);
 
         //move to arm referential
-        glRotatef(angleArm, 0.0f, 0.0f, 1.0f);
+        glRotatef(arm_angle, 0.0f, 0.0f, 1.0f);
 
         //draws the arm
-        drawCylinder(texture, diameterCylinder, sizeArm);
+        draw_cylinder(texture, cylinder_diameter, arm_size);
 
         //move to forearm referential
-        glTranslatef(0.0f, 0.0f, sizeArm + diameterSphere / 5);
-        glRotatef(angleForearm, 0.0f, 1.0f, 0.0f);
+        glTranslatef(0.0f, 0.0f, arm_size + sphere_diameter / 5);
+        glRotatef(forearm_angle, 0.0f, 1.0f, 0.0f);
 
         //draws the forearm
-        drawSphere(texture, diameterSphere);
-        glTranslatef(0.0f, 0.0f, diameterSphere / 5);
-        drawCylinder(texture, diameterCylinder, sizeForearm);
+        draw_sphere(texture, sphere_diameter);
+        glTranslatef(0.0f, 0.0f, sphere_diameter / 5);
+        draw_cylinder(texture, cylinder_diameter, forearm_size);
 
         //move to clamp referential
-        glTranslatef(0.0f, 0.0f, sizeForearm + diameterSphere / 5);
-        glRotatef(angleClampZ, 0.0f, 0.0f, 1.0f);
+        glTranslatef(0.0f, 0.0f, forearm_size + sphere_diameter / 5);
+        glRotatef(clamp_z_angle, 0.0f, 0.0f, 1.0f);
 
         //draws the clamp sphere
-        drawSphere(texture, diameterSphere);
-        glTranslatef(0.0f, 0.0f, diameterSphere / 2);
+        draw_sphere(texture, sphere_diameter);
+        glTranslatef(0.0f, 0.0f, sphere_diameter / 2);
     }
 
     glPushMatrix(); //draws top part of clamp
-        glRotatef(angleClampY + 60, 0.0f, 1.0f, 0.0f);
+        glRotatef(clamp_y_angle + 60, 0.0f, 1.0f, 0.0f);
     
-        drawCylinder(texture, diameterCylinder / 3, sizeClampPart);
-        glTranslatef(0.0f, 0.0f, sizeClampPart + diameterSphere / 15);
-        drawSphere(texture, diameterSphere / 3);
+        draw_cylinder(texture, cylinder_diameter / 3, clamp_part_size);
+        glTranslatef(0.0f, 0.0f, clamp_part_size + sphere_diameter / 15);
+        draw_sphere(texture, sphere_diameter / 3);
     
-        glTranslatef(0.0f, 0.0f, diameterSphere / 15);
+        glTranslatef(0.0f, 0.0f, sphere_diameter / 15);
         glRotatef(-60, 0.0f, 1.0f, 0.0f);
     
-        drawCylinder(texture, diameterCylinder / 3, sizeClampPart);
-        glTranslatef(0.0f, 0.0f, sizeClampPart + diameterSphere / 15);
-        drawSphere(texture, diameterSphere / 3);
+        draw_cylinder(texture, cylinder_diameter / 3, clamp_part_size);
+        glTranslatef(0.0f, 0.0f, clamp_part_size + sphere_diameter / 15);
+        draw_sphere(texture, sphere_diameter / 3);
     
-        glTranslatef(0.0f, 0.0f, diameterSphere / 15);
+        glTranslatef(0.0f, 0.0f, sphere_diameter / 15);
         glRotatef(-60, 0.0f, 1.0f, 0.0f);
-        drawCone(texture, diameterCylinder / 3, sizeClampPart);
+        draw_cone(texture, cylinder_diameter / 3, clamp_part_size);
     glPopMatrix();
 
     glPushMatrix(); //draws bottom part of clamp
-        glRotatef(-angleClampY - 60, 0.0f, 1.0f, 0.0f);
+        glRotatef(-clamp_y_angle - 60, 0.0f, 1.0f, 0.0f);
     
-        drawCylinder(texture, diameterCylinder / 3, sizeClampPart);
-        glTranslatef(0.0f, 0.0f, sizeClampPart + diameterSphere / 15);
-        drawSphere(texture, diameterSphere / 3);
+        draw_cylinder(texture, cylinder_diameter / 3, clamp_part_size);
+        glTranslatef(0.0f, 0.0f, clamp_part_size + sphere_diameter / 15);
+        draw_sphere(texture, sphere_diameter / 3);
     
-        glTranslatef(0.0f, 0.0f, diameterSphere / 15);
+        glTranslatef(0.0f, 0.0f, sphere_diameter / 15);
         glRotatef(60, 0.0f, 1.0f, 0.0f);
     
-        drawCylinder(texture, diameterCylinder / 3, sizeClampPart);
-        glTranslatef(0.0f, 0.0f, sizeClampPart + diameterSphere / 15);
-        drawSphere(texture, diameterSphere / 3);
+        draw_cylinder(texture, cylinder_diameter / 3, clamp_part_size);
+        glTranslatef(0.0f, 0.0f, clamp_part_size + sphere_diameter / 15);
+        draw_sphere(texture, sphere_diameter / 3);
     
-        glTranslatef(0.0f, 0.0f, diameterSphere / 15);
+        glTranslatef(0.0f, 0.0f, sphere_diameter / 15);
         glRotatef(60, 0.0f, 1.0f, 0.0f);
-        drawCone(texture, diameterCylinder / 3, sizeClampPart);
+        draw_cone(texture, cylinder_diameter / 3, clamp_part_size);
     glPopMatrix();
 
     glutSwapBuffers();
@@ -214,7 +205,9 @@ int main(int argc, char** argv) {
     glutInitWindowSize(800, 800);
     glutCreateWindow("Garra");
 
+    glEnable(GL_DEPTH_TEST); // Habilita o depth-buffering
     init_rendering();
+
 
     glutDisplayFunc(handle_redraw);
     glutKeyboardFunc(handle_keyboard);
