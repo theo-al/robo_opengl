@@ -1,5 +1,7 @@
+#include <iostream>
+#include <cstdlib>
+
 #include <GL/glut.h>
-#include "draw.h"
 
 #define UNUSED(x) (void) x
 #define PI 3.141592654
@@ -12,6 +14,9 @@ bool apply_textures = true;
 
 // coisas de perspectiva
 GLfloat fov = DEFAULT_FOV;
+GLfloat eye_dist = 200;
+GLfloat view_rot_x = 0;
+GLfloat view_rot_z = 0;
 
 GLfloat aspect_ratio;
 
@@ -21,6 +26,7 @@ float forearm_angle = 90.0;
 float hand_angle    = 0.0;
 float clamp_z_angle = 0.0;
 float clamp_y_angle = 0.0;
+
 
 
 // Função callback chamada para gerenciar eventos do mouse
@@ -36,6 +42,20 @@ void handle_mouse(int button, int state, int x, int y) {
         if (fov <= 130) fov += 5;
         break;
       case GLUT_MIDDLE_BUTTON: fov = DEFAULT_FOV; break;
+    }
+    glutPostRedisplay();
+}
+
+// Callback para teclas especiais
+void handle_special_keys(int key, int x, int y) {
+    UNUSED(x); UNUSED(y);
+
+    std::cout << key << std::endl;
+    switch (key) {
+      case GLUT_KEY_UP:    view_rot_x += 6; break;
+      case GLUT_KEY_DOWN:  view_rot_x -= 6; break;
+      case GLUT_KEY_LEFT:  view_rot_z -= 6; break;
+      case GLUT_KEY_RIGHT: view_rot_z += 6; break;
     }
     glutPostRedisplay();
 }
@@ -83,42 +103,5 @@ void handle_window_resize(GLsizei w, GLsizei h) {
 
     glViewport(0, 0, w, h); // Especifica o tamanho da viewport
     aspect_ratio = _w/_h;   // Calcula a correção de aspecto
-}
-
-// Inicializa parâmetros de iluminação
-void init_lighting(void) {
-    const GLfloat luz_ambiente[4] = { 0.6,   0.6, 0.6, 1.0 };
-    const GLfloat luz_difusa[4]   = { 0.9,   0.9, 0.9, 1.0 };
-    const GLfloat posicao_luz[4]  = { 0.0, 500.0, 0.0, 0.0 };
-
-    // Habilita o modelo de colorização de Gouraud
-    glShadeModel(GL_SMOOTH);
-
-    // Ativa o uso da luz ambiente 
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luz_ambiente);
-
-    // Define os parâmetros das fontes de luz
-    glLightfv(GL_LIGHT0, GL_AMBIENT,  luz_ambiente);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE,  luz_difusa);
-    glLightfv(GL_LIGHT0, GL_POSITION, posicao_luz);
-
-    glEnable(GL_LIGHTING);   // Habilita o uso de iluminação
-    glEnable(GL_LIGHT0);     // Habilita as fontes de luz
-    //glFrontFace(GL_CW);
-}
-
-//[]
-void init_rendering() {
-    // Especifica que a cor de fundo da janela será preta
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-    // Habilita blending para usar alpha
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    glEnable(GL_DEPTH_TEST); // Habilita o depth-buffering
-
-    init_textures();
-    init_lighting();
 }
 
