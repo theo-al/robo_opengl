@@ -5,7 +5,7 @@
 
 #define UNUSED(x) (void) x
 #define PI 3.141592654
-#define DEFAULT_FOV 50
+#define DEFAULT_FOV 60
 #define ESC 27
 
 
@@ -79,14 +79,14 @@ void handle_keyboard(unsigned char key, int x, int y) {
       case 'w': robot_displacement += 1; break;
       case 's': robot_displacement -= 1; break;
 
-      case 'e': torso_angle -= 1; break;
+      case 'z': torso_angle -= 1; break;
       case 'c': torso_angle += 1; break;
 
-      case 'q':
-          if (head_angle > -87) head_angle -= 3;
+      case 'e':
+          if (head_angle > -50) head_angle -= 3;
           break;
-      case 'z':
-          if (head_angle < 87) head_angle += 3;
+      case 'q':
+          if (head_angle < 50) head_angle += 3;
           break;
 
       case 'a':
@@ -98,7 +98,7 @@ void handle_keyboard(unsigned char key, int x, int y) {
 
 
       case '1': //Increase arm angle
-          if (right_arm_angle < 180) right_arm_angle += 3;
+          if (right_arm_angle < 100) right_arm_angle += 3;
           break;
       case '2': //Decrease arm angle
           if (right_arm_angle > 0) right_arm_angle -= 3;
@@ -117,7 +117,7 @@ void handle_keyboard(unsigned char key, int x, int y) {
           break;
 
       case '7': //Increase arm angle
-          if (left_arm_angle < 180) left_arm_angle += 3;
+          if (left_arm_angle < 100) left_arm_angle += 3;
           break;
       case '8': //Decrease arm angle
           if (left_arm_angle > 0) left_arm_angle -= 3;

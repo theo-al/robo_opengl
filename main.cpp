@@ -4,7 +4,7 @@
 
 
 void draw_leg(float width, float height) {
-    float wheel_size = width;
+    float wheel_size = width*.7;
 
     float _width  = width - 1;
     float _height = height - wheel_size;
@@ -24,6 +24,8 @@ void draw_leg(float width, float height) {
     glTranslatef(0, 0, -wheel_size);
     glPushMatrix();
     glColor3f(.3, .3, .3);
+        glScalef(1.5, 1, .8);
+
         glRotatef(90, 1.0f, 0.0f, 0.0f);
         glTranslatef(0, 0, wheel_size);
 
@@ -31,7 +33,7 @@ void draw_leg(float width, float height) {
 
         glTranslatef(0, 0, -wheel_size*1.95);
         draw_cylinder(metal_tex_id, wheel_size, wheel_size*1.95);
-        draw_cone(glass_tex_id, width, 5);
+        draw_cone(glass_tex_id, wheel_size, 5);
     glColor3f(1., 1., 1.);
     glPopMatrix();
 }
@@ -58,8 +60,8 @@ void draw_torso(float width, float height) {
 // Função callback chamada para fazer o desenho
 void handle_redraw(void) {
     // Constantes do braço //!
-    const float arm_length     = 4.5;
-    const float forearm_length = 3.0;
+    const float arm_length     = 3.5;
+    const float forearm_length = 2.5;
     
     const float arm_diameter = 0.4;
     const float joint_diameter = arm_diameter*4/3;
@@ -69,11 +71,11 @@ void handle_redraw(void) {
     const float torso_width = torso_height*5/7;
 
     // Constantes das pernas
-    const float leg_height = torso_height;
+    const float leg_height = torso_height*3/2;
     const float leg_width = torso_width/2;
 
     // Constantes gerais
-    const float height_offset = 45;
+    const float height_offset = 50;
 
 
     // Limpa a janela e o depth buffer
@@ -99,21 +101,18 @@ void handle_redraw(void) {
         // Aplica rotações (pan)
         glRotatef(view_rot_x, 1, 0, 0);
         glRotatef(view_rot_z, 0, 1, 0);
-    
-        // Aplica translação
-        glTranslatef(0, height_offset, robot_displacement);
 
+        // Aplica translação especial
+        glTranslatef(0, height_offset, robot_displacement);
         // Aplica as rotações especiais
         glRotatef(head_twist, 0, 1, 0);
         glRotatef(head_angle, 1, 0, 0);
-
-
+    
         // Diminui a cabeça pra ficar mais proporcional
         glScalef(.6, .6, .6);
 
         // Desenha pescoço (cone)
         draw_neck();
-    
         // Desenha cabeça
         glTranslatef(0.0f, 37.0f, 0.0f);
         draw_head();
@@ -124,7 +123,7 @@ void handle_redraw(void) {
         glRotatef(view_rot_x, 0, 1, 0);
         glRotatef(view_rot_z, 0, 0, 1);
     
-        // Aplica translação
+        // Aplica translação especial
         glTranslatef(robot_displacement, 0, height_offset);
 
         // Seta a cor para branco
@@ -142,7 +141,7 @@ void handle_redraw(void) {
 
             // Braços
             glPushMatrix(); // Desenha braço esquerdo (pro robô)
-                glTranslatef(0.0f, torso_width/2, -torso_height*1/3);
+                glTranslatef(torso_width/4, torso_width/2, -torso_height/2);
                 glRotatef(left_arm_angle, 0.0f, 0.0f, 1.0f);
                 glRotatef(90, 0.0f, 1.0f, 0.0f);
                 glScalef(10, 10, 10);
@@ -150,7 +149,7 @@ void handle_redraw(void) {
                                left_forearm_angle, left_clamp_y_angle, left_clamp_z_angle);
             glPopMatrix();
             glPushMatrix(); // Desenha braço direito (pro robô)
-                glTranslatef(0.0f, -torso_width/2, -torso_height*1/3);
+                glTranslatef(torso_width/4, -torso_width/2, -torso_height/2);
                 glRotatef(-right_arm_angle, 0.0f, 0.0f, 1.0f);
                 glRotatef(90, 0.0f, 1.0f, 0.0f);
                 glScalef(10, 10, 10);
