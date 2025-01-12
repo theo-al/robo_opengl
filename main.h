@@ -7,11 +7,8 @@
 #define ESC 27
 
 
-//[]
+// define se usa texturas ou não
 bool apply_textures = true;
-
-// bola
-bool mostrar_bola = false;
 
 // coisas de perspectiva
 GLfloat fov = DEFAULT_FOV;
@@ -54,9 +51,6 @@ void handle_keyboard(unsigned char key, int x, int y) {
       case 't': //Use texture or not
           apply_textures ^= 1;
           break;
-      case 'f': //Show textures or not
-          mostrar_bola ^= 1;
-          break;
       case '1': //Increase arm angle
           arm_angle += 3;
           if (arm_angle >= 360) arm_angle = 0;
@@ -97,9 +91,6 @@ void init_lighting(void) {
     const GLfloat luz_difusa[4]   = { 0.9,   0.9, 0.9, 1.0 };
     const GLfloat posicao_luz[4]  = { 0.0, 500.0, 0.0, 0.0 };
 
-    // Especifica que a cor de fundo da janela será preta
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
     // Habilita o modelo de colorização de Gouraud
     glShadeModel(GL_SMOOTH);
 
@@ -113,16 +104,20 @@ void init_lighting(void) {
 
     glEnable(GL_LIGHTING);   // Habilita o uso de iluminação
     glEnable(GL_LIGHT0);     // Habilita as fontes de luz
-    glEnable(GL_DEPTH_TEST); // Habilita o depth-buffering
     //glFrontFace(GL_CW);
-
-    // Habilita blending para usar alpha
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 //[]
 void init_rendering() {
+    // Especifica que a cor de fundo da janela será preta
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+    // Habilita blending para usar alpha
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glEnable(GL_DEPTH_TEST); // Habilita o depth-buffering
+
     init_textures();
     init_lighting();
 }
