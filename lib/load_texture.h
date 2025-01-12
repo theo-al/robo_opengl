@@ -1,3 +1,5 @@
+#pragma once
+
 #include "RgbImage.h"
 #include "GL/glut.h"
 
