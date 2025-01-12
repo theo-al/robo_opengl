@@ -6,10 +6,12 @@
 #define UNUSED(x) (void) x
 #define PI 3.141592654
 #define DEFAULT_FOV 60
+#define DEFAULT_ARM_LEN 3.5
+#define DEFAULT_FOREARM_LEN 3.0
 #define ESC 27
 
 
-// coisas de perspectiva
+// estados de perspectiva
 GLfloat fov = DEFAULT_FOV;
 GLfloat eye_dist = 200;
 GLfloat view_rot_x = 0;
@@ -17,7 +19,15 @@ GLfloat view_rot_z = 0;
 
 GLfloat aspect_ratio;
 
-// estado dos braços
+// estados do robô
+float robot_displacement = 0;
+float torso_angle = 0;
+float head_angle = 0;
+float head_twist = 0;
+
+float arm_length     = DEFAULT_ARM_LEN;
+float forearm_length = DEFAULT_FOREARM_LEN;
+    
 float left_arm_angle     = 65.0;
 float left_forearm_angle = 45.0;
 float left_hand_angle    = 30.0;
@@ -30,11 +40,6 @@ float right_hand_angle    = 0.0;
 float right_clamp_z_angle = 0.0;
 float right_clamp_y_angle = 0.0;
 
-// estado do robô
-float robot_displacement = 0;
-float torso_angle = 0;
-float head_angle = 0;
-float head_twist = 0;
 
 
 // Função callback chamada para gerenciar eventos do mouse
@@ -81,6 +86,17 @@ void handle_keyboard(unsigned char key, int x, int y) {
 
       case 'z': torso_angle -= 1; break;
       case 'c': torso_angle += 1; break;
+
+      case 'r':
+          if (arm_length > .8) {
+              arm_length     -= .2;
+              forearm_length -= .2;
+          } break;
+      case 't':
+          if (arm_length < DEFAULT_ARM_LEN) {
+              arm_length     += .2;
+              forearm_length += .2;
+          } break;
 
       case 'e':
           if (head_angle > -50) head_angle -= 3;

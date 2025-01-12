@@ -3,11 +3,10 @@
 #include <GL/glut.h>
 #include "load_texture.h"
 
-//! ter um quadric vazio e fazer bind nas texturas uma vez só (e ir passando)
 
 const GLuint INVALID_TEXTURE = (GLuint) -1;
 
-// coisas de textura
+// Estados de textura
 GLuint rugged_tex_id;
 GLuint rusted_tex_id;
 GLuint golden_tex_id;
@@ -21,7 +20,7 @@ GLUquadric* glass_quadric;
 GLUquadric* sphere_quadric;
 GLUquadric* cylinder_quadric;
 
-// Inicializa texturas
+// Inicialização de texturas
 void init_textures(void){
     const char* rugged_tex_path = "./assets/texture_rugged_metal.bmp";
     const char* rusted_tex_path = "./assets/texture_rusted_metal.bmp";
@@ -413,7 +412,7 @@ void draw_arm(float arm_diameter, float joint_diameter, float arm_length,
     //draws the elbow
     draw_sphere(metal_tex_id, joint_diameter);
 
-    glColor3f(.5,.5,.5); //draws the forearm
+    glColor3f(.4,.4,.4); //draws the forearm
         glTranslatef(0.0f, 0.0f, joint_diameter / 5);
         draw_cylinder(rugged_tex_id, arm_diameter, forearm_length);
     glColor3f(1, 1, 1);

@@ -12,7 +12,7 @@ void draw_leg(float width, float height) {
     glTranslatef(0, 0, -_height);
 
     glPushMatrix();
-    glColor3f(.7, .7, .7);
+    glColor3f(.4, .4, .4);
         draw_inverted_cone(metal_tex_id, _width, 10);
         draw_cylinder(rugged_tex_id, _width, _height);
 
@@ -23,7 +23,7 @@ void draw_leg(float width, float height) {
 
     glTranslatef(0, 0, -wheel_size);
     glPushMatrix();
-    glColor3f(.3, .3, .3);
+    glColor3f(.25, .25, .25);
         glScalef(1.5, 1, .8);
 
         glRotatef(90, 1.0f, 0.0f, 0.0f);
@@ -31,8 +31,11 @@ void draw_leg(float width, float height) {
 
         draw_inverted_cone(glass_tex_id, wheel_size, 5);
 
+        glColor3f(.7, .7, .7);
         glTranslatef(0, 0, -wheel_size*1.95);
         draw_cylinder(metal_tex_id, wheel_size, wheel_size*1.95);
+
+        glColor3f(.25, .25, .25);
         draw_cone(glass_tex_id, wheel_size, 5);
     glColor3f(1., 1., 1.);
     glPopMatrix();
@@ -59,10 +62,7 @@ void draw_torso(float width, float height) {
 
 // Função callback chamada para fazer o desenho
 void handle_redraw(void) {
-    // Constantes do braço //!
-    const float arm_length     = 3.5;
-    const float forearm_length = 2.5;
-    
+    // Constantes do braço
     const float arm_diameter = 0.4;
     const float joint_diameter = arm_diameter*4/3;
 
