@@ -80,6 +80,13 @@ void draw_cone(GLuint tex_id, float diameter, float length) {
     }
     gluCylinder(cylinder_quadric, diameter, 0, length, 40.0, length*30.0);
 }
+// Função que desenha um cone de cabeça pra baixo
+void draw_inverted_cone(GLuint tex_id, float diameter, float height) {
+    glPushMatrix();
+        glRotatef(180, 0.0f, 1.0f, 0.0f);
+        draw_cone(tex_id, diameter, height);
+    glPopMatrix();
+}
 
 // Função que desenha um disco
 void draw_disk(GLuint tex_id, float diameterInner, float diameterOuter) {
@@ -393,89 +400,86 @@ void draw_head() {
     glDisable(GL_CULL_FACE);
 }
 
-void draw_arm(GLuint texture, float arm_diameter,
-                              float joint_diameter,
-                              float arm_length,
-                              float forearm_length, 
-			      float forearm_angle) {
-    //draws the arm
-    draw_cylinder(texture, arm_diameter, arm_length);
-    
+void draw_arm(float arm_diameter, float joint_diameter, float arm_length,
+              float forearm_length, float forearm_angle) {
+    glColor3f(.5,.5,.5); //draws the arm
+        draw_cylinder(rugged_tex_id, arm_diameter, arm_length);
+    glColor3f(1, 1, 1);
+        
     //move to forearm referential
     glTranslatef(0.0f, 0.0f, arm_length + joint_diameter / 5);
     glRotatef(forearm_angle, 0.0f, 1.0f, 0.0f);
     
     //draws the elbow
-    draw_sphere(texture, joint_diameter);
+    draw_sphere(metal_tex_id, joint_diameter);
 
-    //draws the forearm
-    glTranslatef(0.0f, 0.0f, joint_diameter / 5);
-    draw_cylinder(texture, arm_diameter, forearm_length);
+    glColor3f(.5,.5,.5); //draws the forearm
+        glTranslatef(0.0f, 0.0f, joint_diameter / 5);
+        draw_cylinder(rugged_tex_id, arm_diameter, forearm_length);
+    glColor3f(1, 1, 1);
 }
 
-void draw_clamp(GLuint texture, float joint_diameter,
-                                float finger_diameter,
-                                float finger_length,
-                                float clamp_y_angle) {
+void draw_clamp(float joint_diameter,
+                float finger_diameter,
+                float finger_length,
+                float clamp_y_angle) {
     //draws the clamp sphere (joint)
-    draw_sphere(texture, joint_diameter);
+    draw_sphere(metal_tex_id, joint_diameter);
 
     //move to finger referential
     glTranslatef(0.0f, 0.0f, joint_diameter / 2);
 
+    glColor3f(.9,.3,.3);
     glPushMatrix(); //draws top finger of clamp
         glRotatef(clamp_y_angle + 60, 0.0f, 1.0f, 0.0f); //! 60 mágico
-        draw_cylinder(texture, finger_diameter, finger_length);
+        draw_cylinder(metal_tex_id, finger_diameter, finger_length);
 
         glTranslatef(0.0f, 0.0f, finger_length + joint_diameter / 15);
-        draw_sphere(texture, joint_diameter / 3);
+        draw_sphere(metal_tex_id, joint_diameter / 3);
     
         glTranslatef(0.0f, 0.0f, joint_diameter / 15);
         glRotatef(-60, 0.0f, 1.0f, 0.0f); //! 60 mágico
-        draw_cylinder(texture, finger_diameter, finger_length);
+        draw_cylinder(metal_tex_id, finger_diameter, finger_length);
 
         glTranslatef(0.0f, 0.0f, finger_length + joint_diameter / 15);
-        draw_sphere(texture, joint_diameter / 3);
+        draw_sphere(metal_tex_id, joint_diameter / 3);
     
         glTranslatef(0.0f, 0.0f, joint_diameter / 15);
         glRotatef(-60, 0.0f, 1.0f, 0.0f); //! 60 mágico
-        draw_cone(texture, finger_diameter, finger_length);
+        draw_cone(metal_tex_id, finger_diameter, finger_length);
     glPopMatrix();
 
     glPushMatrix(); //draws bottom finger of clamp
         glRotatef(-(clamp_y_angle + 60), 0.0f, 1.0f, 0.0f); //! 60 mágico
-        draw_cylinder(texture, finger_diameter, finger_length);
+        draw_cylinder(metal_tex_id, finger_diameter, finger_length);
 
         glTranslatef(0.0f, 0.0f, finger_length + joint_diameter / 15);
-        draw_sphere(texture, joint_diameter / 3);
+        draw_sphere(metal_tex_id, joint_diameter / 3);
     
         glTranslatef(0.0f, 0.0f, joint_diameter / 15);
         glRotatef(60, 0.0f, 1.0f, 0.0f); //! 60 mágico
-        draw_cylinder(texture, finger_diameter, finger_length);
+        draw_cylinder(metal_tex_id, finger_diameter, finger_length);
 
         glTranslatef(0.0f, 0.0f, finger_length + joint_diameter / 15);
-        draw_sphere(texture, joint_diameter / 3);
+        draw_sphere(metal_tex_id, joint_diameter / 3);
     
         glTranslatef(0.0f, 0.0f, joint_diameter / 15);
         glRotatef(60, 0.0f, 1.0f, 0.0f); //! 60 mágico
-        draw_cone(texture, finger_diameter, finger_length);
+        draw_cone(metal_tex_id, finger_diameter, finger_length);
     glPopMatrix();
+    glColor3f(1,1,1);
 }
 
-void draw_whole_arm(GLuint texture, float arm_diameter,
-                                    float joint_diameter,
-                                    float arm_length,
-                                    float forearm_length,
-                                    float forearm_angle,
-				    float clamp_y_angle,
-				    float clamp_z_angle) {
+void draw_whole_arm(float arm_diameter, float joint_diameter, float arm_length,
+                    float forearm_length, float forearm_angle,
+                    float clamp_y_angle, float clamp_z_angle) {
     // Desenha braço
-    draw_arm(texture, arm_diameter, joint_diameter, arm_length, forearm_length, forearm_angle);
+    draw_arm(arm_diameter, joint_diameter, arm_length, forearm_length, forearm_angle);
 
     // Desenha garra
     glTranslatef(0.0f, 0.0f, forearm_length + joint_diameter / 5);
     glRotatef(clamp_z_angle, 0.0f, 0.0f, 1.0f);
     
-    draw_clamp(texture, joint_diameter, arm_diameter/3, forearm_length/3, clamp_y_angle);
+    draw_clamp(joint_diameter, arm_diameter/3, forearm_length/3, clamp_y_angle);
 }
 

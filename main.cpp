@@ -3,16 +3,78 @@
 #include "main.h"
 
 
+void draw_leg(float width, float height) {
+    float wheel_size = width;
+
+    float _width  = width - 1;
+    float _height = height - wheel_size;
+
+    glTranslatef(0, 0, -_height);
+
+    glPushMatrix();
+    glColor3f(.7, .7, .7);
+        draw_inverted_cone(metal_tex_id, _width, 10);
+        draw_cylinder(rugged_tex_id, _width, _height);
+
+        glTranslatef(0, 0, _height);
+        draw_cone(metal_tex_id, _width, 10);
+    glColor3f(1., 1., 1.);
+    glPopMatrix();
+
+    glTranslatef(0, 0, -wheel_size);
+    glPushMatrix();
+    glColor3f(.3, .3, .3);
+        glRotatef(90, 1.0f, 0.0f, 0.0f);
+        glTranslatef(0, 0, wheel_size);
+
+        draw_inverted_cone(glass_tex_id, wheel_size, 5);
+
+        glTranslatef(0, 0, -wheel_size*1.95);
+        draw_cylinder(metal_tex_id, wheel_size, wheel_size*1.95);
+        draw_cone(glass_tex_id, width, 5);
+    glColor3f(1., 1., 1.);
+    glPopMatrix();
+}
+
+void draw_torso(float width, float height) {
+    float diff = 15;
+
+    glPushMatrix();
+        glTranslatef(0, 0, -diff/2);
+        draw_cone(metal_tex_id, width, diff);
+
+        glTranslatef(0, 0, -(height-diff));
+        draw_cylinder(metal_tex_id, width, height - diff);
+
+        draw_inverted_cone(metal_tex_id, width, diff);
+    glPopMatrix();
+
+    glColor3f(.3, .3, .3);
+        glTranslatef(width-2, 0, -height/2);
+        draw_cube(golden_tex_id, 4, 10, 15);
+    glColor3f(1., 1., 1.);
+}
 
 // Função callback chamada para fazer o desenho
 void handle_redraw(void) {
-    // Constantes* do braço
+    // Constantes do braço //!
     const float arm_length     = 4.5;
     const float forearm_length = 3.0;
     
     const float arm_diameter = 0.4;
     const float joint_diameter = arm_diameter*4/3;
-    //!*
+
+    // Constantes do torso
+    const float torso_height = 55;
+    const float torso_width = torso_height*5/7;
+
+    // Constantes das pernas
+    const float leg_height = torso_height;
+    const float leg_width = torso_width/2;
+
+    // Constantes gerais
+    const float height_offset = 45;
+
 
     // Limpa a janela e o depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -26,13 +88,10 @@ void handle_redraw(void) {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity(); // Inicializa sistema de coordenadas do modelo
     gluLookAt(eye_dist, 0,  0,   // Especifica posição do observador
-              0,        0,  0.,  // Especifica posição do alvo
+              0,        0,  0,   // Especifica posição do alvo
               0,        0,  1 ); // Especifica direção cima (como o eixo y)
 
-    // Desativa as texturas se precisar
-    GLuint metal_texture = apply_textures ? metal_tex_id : INVALID_TEXTURE;
-
-    glPushMatrix();
+    glPushMatrix(); // Cabeça
         // Muda de referencial
         glRotatef(90, 1.0f, 0.0f, 0.0f);
         glRotatef(90, 0.0f, 1.0f, 0.0f);
@@ -41,6 +100,10 @@ void handle_redraw(void) {
         glRotatef(view_rot_x, 1, 0, 0);
         glRotatef(view_rot_z, 0, 1, 0);
     
+        // Aplica translação
+        glTranslatef(0, height_offset, robot_displacement);
+
+        glScalef(.6, .6, .6);
         // Desenha pescoço (cone)
         draw_neck();
     
@@ -54,23 +117,55 @@ void handle_redraw(void) {
         glRotatef(view_rot_x, 0, 1, 0);
         glRotatef(view_rot_z, 0, 0, 1);
     
+        // Aplica translação
+        glTranslatef(robot_displacement, 0, height_offset);
+
         // Seta a cor para branco
         glColor3f(1.0f, 1.0f, 1.0f);
+
+        // Torso e braços
+        glPushMatrix();
+            glRotatef(torso_angle, 0, 0, 1);
+
+            // Torso
+            glPushMatrix(); // Desenha torso do robô
+                glScalef(.7, .9, 1);
+                draw_torso(torso_width, torso_height);
+            glPopMatrix();
+
+            // Braços
+            glPushMatrix(); // Desenha braço esquerdo (pro robô)
+                glTranslatef(0.0f, torso_width/2, -torso_height*1/3);
+                glRotatef(left_arm_angle, 0.0f, 0.0f, 1.0f);
+                glRotatef(90, 0.0f, 1.0f, 0.0f);
+                glScalef(10, 10, 10);
+                draw_whole_arm(arm_diameter, joint_diameter, arm_length, forearm_length,
+                               left_forearm_angle, left_clamp_y_angle, left_clamp_z_angle);
+            glPopMatrix();
+            glPushMatrix(); // Desenha braço direito (pro robô)
+                glTranslatef(0.0f, -torso_width/2, -torso_height*1/3);
+                glRotatef(-right_arm_angle, 0.0f, 0.0f, 1.0f);
+                glRotatef(90, 0.0f, 1.0f, 0.0f);
+                glScalef(10, 10, 10);
+                draw_whole_arm(arm_diameter, joint_diameter, arm_length, forearm_length,
+                               right_forearm_angle, right_clamp_y_angle, right_clamp_z_angle);
+            glPopMatrix();
+
+        glPopMatrix();
         
-        glPushMatrix(); // Desenha braço esquerdo (pro robô)
-            glRotatef(arm_angle, 0.0f, 0.0f, 1.0f);
-            glRotatef(90, 0.0f, 1.0f, 0.0f);
-            glScalef(10, 10, 10);
-            draw_whole_arm(metal_texture, arm_diameter, joint_diameter, arm_length,
-        	               forearm_length, forearm_angle, clamp_y_angle, clamp_z_angle);
+
+        // Pernas
+        glPushMatrix(); // Desenha perna esq
+            glScalef(1, .9, 1);
+            glTranslatef(0, torso_width/2, -torso_height);
+            draw_leg(leg_width, leg_height);
         glPopMatrix();
-        glPushMatrix(); // Desenha braço direito (pro robô)
-            glRotatef(-arm_angle, 0.0f, 0.0f, 1.0f);
-            glRotatef(90, 0.0f, 1.0f, 0.0f);
-            glScalef(10, 10, 10);
-            draw_whole_arm(metal_texture, arm_diameter, joint_diameter, arm_length,
-        	               forearm_length, forearm_angle, clamp_y_angle, clamp_z_angle);
+        glPushMatrix(); // Desenha perna dir
+            glScalef(1, .9, 1);
+            glTranslatef(0, -torso_width/2, -torso_height);
+            draw_leg(leg_width, leg_height);
         glPopMatrix();
+
     glPopMatrix();
 
 
@@ -122,8 +217,8 @@ int main(int argc, char** argv) {
     glutInitDisplayMode(GLUT_DOUBLE |
                         GLUT_RGBA |
                         GLUT_DEPTH);
-    glutInitWindowSize(400, 400);
-    glutCreateWindow("Cabeça de Robô");
+    glutInitWindowSize(600, 500);
+    glutCreateWindow("Robô");
 
     init_rendering();
 

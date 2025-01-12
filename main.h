@@ -9,9 +9,6 @@
 #define ESC 27
 
 
-// define se usa texturas ou não
-bool apply_textures = true;
-
 // coisas de perspectiva
 GLfloat fov = DEFAULT_FOV;
 GLfloat eye_dist = 200;
@@ -21,12 +18,21 @@ GLfloat view_rot_z = 0;
 GLfloat aspect_ratio;
 
 // coisas da garra
-float arm_angle     = 90.0;
-float forearm_angle = 90.0;
-float hand_angle    = 0.0;
-float clamp_z_angle = 0.0;
-float clamp_y_angle = 0.0;
+float left_arm_angle     = 65.0;
+float left_forearm_angle = 45.0;
+float left_hand_angle    = 30.0;
+float left_clamp_z_angle = 0.0;
+float left_clamp_y_angle = 0.0;
 
+float right_arm_angle     = 65.0;
+float right_forearm_angle = 45.0;
+float right_hand_angle    = 0.0;
+float right_clamp_z_angle = 0.0;
+float right_clamp_y_angle = 0.0;
+
+//[]
+float robot_displacement = 0;
+float torso_angle = 0;
 
 
 // Função callback chamada para gerenciar eventos do mouse
@@ -68,29 +74,50 @@ void handle_keyboard(unsigned char key, int x, int y) {
     switch (key) {
       case ESC: exit(0); //Exit
 
-      case 't': //Use texture or not
-          apply_textures ^= 1;
-          break;
+      case 'w': robot_displacement += 1; break;
+      case 's': robot_displacement -= 1; break;
+
+      case ',': torso_angle -= 1; break;
+      case '.': torso_angle += 1; break;
+
       case '1': //Increase arm angle
-          arm_angle += 3;
-          if (arm_angle >= 360) arm_angle = 0;
+          if (right_arm_angle < 180) right_arm_angle += 3;
           break;
       case '2': //Decrease arm angle
-          arm_angle -= 3;
-          if (arm_angle <= 0) arm_angle = 360;
+          if (right_arm_angle > 0) right_arm_angle -= 3;
           break;
       case '3': //Increase forearm angle
-          if (forearm_angle < 90) forearm_angle += 3;
+          if (right_forearm_angle < 90) right_forearm_angle += 3;
           break;
       case '4': //Decrease forearm angle
-          if (forearm_angle > -90) forearm_angle -= 3;
+          if (right_forearm_angle > -90) right_forearm_angle -= 3;
           break;
       case '5': //Increase clamp angle y axis
-          if (clamp_y_angle < 60) clamp_y_angle += 3;
+          if (right_clamp_y_angle < 60) right_clamp_y_angle += 3;
           break;
       case '6': //Decrease clamp angle y axis
-          if (clamp_y_angle > 0) clamp_y_angle -= 3;
+          if (right_clamp_y_angle > 0) right_clamp_y_angle -= 3;
           break;
+
+      case '7': //Increase arm angle
+          if (left_arm_angle < 180) left_arm_angle += 3;
+          break;
+      case '8': //Decrease arm angle
+          if (left_arm_angle > 0) left_arm_angle -= 3;
+          break;
+      case '9': //Increase forearm angle
+          if (left_forearm_angle < 90) left_forearm_angle += 3;
+          break;
+      case '0': //Decrease forearm angle
+          if (left_forearm_angle > -90) left_forearm_angle -= 3;
+          break;
+      case '-': //Increase clamp angle y axis
+          if (left_clamp_y_angle < 60) left_clamp_y_angle += 3;
+          break;
+      case '=': //Decrease clamp angle y axis
+          if (left_clamp_y_angle > 0) left_clamp_y_angle -= 3;
+          break;
+
       default: return;
     }
     glutPostRedisplay();
