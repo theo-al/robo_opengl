@@ -17,7 +17,7 @@ GLfloat view_rot_z = 0;
 
 GLfloat aspect_ratio;
 
-// coisas da garra
+// estado dos braços
 float left_arm_angle     = 65.0;
 float left_forearm_angle = 45.0;
 float left_hand_angle    = 30.0;
@@ -30,9 +30,11 @@ float right_hand_angle    = 0.0;
 float right_clamp_z_angle = 0.0;
 float right_clamp_y_angle = 0.0;
 
-//[]
+// estado do robô
 float robot_displacement = 0;
 float torso_angle = 0;
+float head_angle = 0;
+float head_twist = 0;
 
 
 // Função callback chamada para gerenciar eventos do mouse
@@ -77,8 +79,23 @@ void handle_keyboard(unsigned char key, int x, int y) {
       case 'w': robot_displacement += 1; break;
       case 's': robot_displacement -= 1; break;
 
-      case ',': torso_angle -= 1; break;
-      case '.': torso_angle += 1; break;
+      case 'e': torso_angle -= 1; break;
+      case 'c': torso_angle += 1; break;
+
+      case 'q':
+          if (head_angle > -87) head_angle -= 3;
+          break;
+      case 'z':
+          if (head_angle < 87) head_angle += 3;
+          break;
+
+      case 'a':
+          if (head_twist > -120) head_twist -= 3;
+          break;
+      case 'd':
+          if (head_twist < 120) head_twist += 3;
+          break;
+
 
       case '1': //Increase arm angle
           if (right_arm_angle < 180) right_arm_angle += 3;

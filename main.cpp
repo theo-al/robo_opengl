@@ -103,7 +103,14 @@ void handle_redraw(void) {
         // Aplica translação
         glTranslatef(0, height_offset, robot_displacement);
 
+        // Aplica as rotações especiais
+        glRotatef(head_twist, 0, 1, 0);
+        glRotatef(head_angle, 1, 0, 0);
+
+
+        // Diminui a cabeça pra ficar mais proporcional
         glScalef(.6, .6, .6);
+
         // Desenha pescoço (cone)
         draw_neck();
     
@@ -150,9 +157,7 @@ void handle_redraw(void) {
                 draw_whole_arm(arm_diameter, joint_diameter, arm_length, forearm_length,
                                right_forearm_angle, right_clamp_y_angle, right_clamp_z_angle);
             glPopMatrix();
-
         glPopMatrix();
-        
 
         // Pernas
         glPushMatrix(); // Desenha perna esq
